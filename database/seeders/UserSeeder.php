@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
             'has_edit' => User::$has_edit,
             'verify' => User::$verify,
             'detail_address' => 'example address 1',
-            'device_token' => 'xxx111xxx',
+            'device_token' => 'xxx222xxx',
         ]);
         User::insert([
             'email' => 'user@gmail.com',
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
             'has_edit' => User::$has_edit,
             'verify' => User::$verify,
             'detail_address' => 'example address 2',
-            'device_token' => 'xxx222xxx',
+            'device_token' => 'xxx111xxx',
         ]);
         User::insert([
             'email' => 'staff@gmail.com',

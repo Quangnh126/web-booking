@@ -114,11 +114,11 @@ class AuthController extends Controller
 
             $data = [];
             $data['user'] = $user;
-            $data['isVerify'] = $user->is_verify;
+            $data['isVerify'] = $user->verify;
             $data['role'] = $user->role_id == 2 ? Role::$user : Role::$admin;
             $data['token'] = $user->createToken($request->device_token)->plainTextToken;
 
-            ($user->is_verify == 1) ? $data['isVerify'] = $user->is_verify : $data = ['isVerify' => $user->is_verify];
+            ($user->verify == 1) ? $data['isVerify'] = $user->verify : $data = ['isVerify' => $user->verify];
 
             return response()->json([
                 'status' => Constant::SUCCESS_CODE,
