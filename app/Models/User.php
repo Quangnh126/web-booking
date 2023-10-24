@@ -19,6 +19,7 @@ class User extends Authenticatable
     static $inactive = 0;
     static $admin = 1;
     static $user = 2;
+    static $staff = 3;
     static $verify = 1;
     static $not_verify = 0;
     static $register_code = 0;
