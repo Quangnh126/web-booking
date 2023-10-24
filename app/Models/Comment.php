@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class Comment extends Model
 {
     use HasFactory;
 
-    protected $table = 'roles';
+    protected $table = 'comment';
 
-    static $admin = 'admin';
-    static $user = 'user';
-    static $staff = 'staff';
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -21,11 +22,9 @@ class Role extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'user_id',
+        'room_id',
+        'rate',
+        'content',
     ];
-
-    public function user()
-    {
-        return $this->hasMany(User::class, 'role_id', 'id');
-    }
 }

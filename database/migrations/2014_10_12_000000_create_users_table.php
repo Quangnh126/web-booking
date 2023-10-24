@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('has_edit');
             $table->boolean('verify');
             $table->string('detail_address', 1500);
+            $table->longText('device_token', 255);
             $table->timestamps();
         });
     }

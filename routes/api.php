@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Admin\UserV2Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +26,8 @@ Route::group(['middleware' => ['role:user', 'language']], function () {
         \App\Helpers\RouteHelper::includeRouteFiles(__DIR__ . '/frontend');
     });
 });
+
+Route::post('v2/auth/login', [UserV2Controller::class, 'loginAdmin'])->middleware('language');
 
 Route::group(['middleware' => ['role:admin', 'language']], function () {
     Route::group(['middleware' => 'auth:sanctum'], function () {

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
 /**
- * @OA\Info(title="Giftapp API", version="0.1")
+ * @OA\Info(title="Web Booking API", version="0.1")
  * @OA\PathItem (
  *     path="/api/doc",
  *     ),

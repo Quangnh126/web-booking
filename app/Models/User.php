@@ -64,12 +64,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function scopeRole($query, $type)
+    public function scopeOfRole($query, $type)
     {
         return $query->where('role_id', $type);
     }
 
-    public function scopeEmail($query, $type)
+    public function scopeOfEmail($query, $type)
     {
         return $query->where('email', $type);
     }

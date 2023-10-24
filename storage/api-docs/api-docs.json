@@ -1,11 +1,145 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Giftapp API",
+        "title": "Web Booking API",
         "version": "0.1"
     },
     "paths": {
-        "/api/doc": {}
+        "/api/doc": {},
+        "/api/v2/auth/login": {
+            "post": {
+                "tags": [
+                    "CMS Tài khoản"
+                ],
+                "summary": "Đăng nhập Admin/Staff",
+                "operationId": "v2/users/login/admin",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "header",
+                        "description": "Ngôn ngữ",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "vi"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "examples": {
+                                "Examples": {
+                                    "summary": "Examples",
+                                    "value": {
+                                        "email": "admin@gmail.com",
+                                        "password": "123123"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Tài khoản"
+                ],
+                "summary": "Đăng nhập User",
+                "operationId": "users/login/user",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "header",
+                        "description": "Ngôn ngữ",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "vi"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "device_token": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "examples": {
+                                "Examples": {
+                                    "summary": "Examples",
+                                    "value": {
+                                        "email": "user@gmail.com",
+                                        "password": "123123",
+                                        "device_token": "xxx111xxx"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     },
     "components": {
         "securitySchemes": {
