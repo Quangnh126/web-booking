@@ -21,5 +21,8 @@ class RoleSeeder extends Seeder
         Role::insert([
             'name' => 'user',
         ]);
+        Role::insert([
+            'name' => 'staff',
+        ]);
     }
 }
