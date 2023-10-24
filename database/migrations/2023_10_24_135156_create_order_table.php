@@ -20,7 +20,7 @@ return new class extends Migration
             $table->double('cost')->nullable();
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
-            $table->boolean('status')->default(1);
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
