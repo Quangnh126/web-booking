@@ -43,7 +43,6 @@ class User extends Authenticatable
         'has_edit',
         'verify',
         'detail_address',
-        'device_token',
     ];
 
     /**
@@ -53,6 +52,9 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'device_token',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -72,5 +74,10 @@ class User extends Authenticatable
     public function scopeOfEmail($query, $type)
     {
         return $query->where('email', $type);
+    }
+
+    public function scopeOfStaff($query, $type)
+    {
+        return $query->whereIn('role_id', $type);
     }
 }

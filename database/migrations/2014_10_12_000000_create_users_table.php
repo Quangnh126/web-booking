@@ -22,10 +22,10 @@ return new class extends Migration
             $table->string('phone_number', 15);
             $table->tinyInteger('role_id');
             $table->boolean('status')->default(0);
-            $table->boolean('has_edit');
-            $table->boolean('verify');
-            $table->string('detail_address', 1500);
-            $table->longText('device_token', 255);
+            $table->boolean('has_edit')->default(0);
+            $table->boolean('verify')->default(0);
+            $table->string('detail_address', 1500)->nullable();
+            $table->longText('device_token', 255)->nullable();
             $table->timestamps();
         });
     }

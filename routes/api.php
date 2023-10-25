@@ -29,7 +29,7 @@ Route::group(['middleware' => ['role:user', 'language']], function () {
 
 Route::post('v2/auth/login', [UserV2Controller::class, 'loginAdmin'])->middleware('language');
 
-Route::group(['middleware' => ['role:admin', 'language']], function () {
+Route::group(['prefix' => '/v2', 'middleware' => ['role:admin', 'language']], function () {
     Route::group(['middleware' => 'auth:sanctum'], function () {
 //        API ADMIN
         \App\Helpers\RouteHelper::includeRouteFiles(__DIR__ . '/admin');
