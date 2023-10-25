@@ -115,35 +115,6 @@ class UserV2Controller
                     'message' => trans('messages.success.users.login_success'),
                     'data' => $data
                 ], Constant::SUCCESS_CODE);
-            } else {
-                $store = $this->store->ofEmail($request->email)->where('is_deleted', Store::$not_deleted)
-                    ->first();
-
-                if ($store) {
-                    if (!Hash::check($request->password, $store->password)) {
-                        return response()->json([
-                            'status' => Constant::BAD_REQUEST_CODE,
-                            'errorCode' => 'E_UC2_3',
-                            'message' => trans('messages.errors.users.password_not_correct'),
-                        ], Constant::BAD_REQUEST_CODE);
-                    }
-
-                    // xoa token cu
-//                    $store->tokens()->delete();
-
-                    $data = [];
-                    $data['id'] = $store->id;
-                    $data['display_name'] = $store->name;
-                    $data['avatar'] = $store->logo;
-                    $data['role'] = Role::$store;
-                    $data['token'] = $store->createToken("API TOKEN")->plainTextToken;
-
-                    return response()->json([
-                        'status' => Constant::SUCCESS_CODE,
-                        'message' => trans('messages.success.users.login_success'),
-                        'data' => $data,
-                    ], Constant::SUCCESS_CODE);
-                }
             }
 
             return response()->json([

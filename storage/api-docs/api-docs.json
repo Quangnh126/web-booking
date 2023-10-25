@@ -6,6 +6,375 @@
     },
     "paths": {
         "/api/doc": {},
+        "/api/v2/staff/index": {
+            "get": {
+                "tags": [
+                    "CMS Staff"
+                ],
+                "summary": "CMS danh sách nhân viên",
+                "operationId": "v2/staff/index",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "header",
+                        "description": "Ngôn ngữ",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "vi"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Trang",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "perpage",
+                        "in": "query",
+                        "description": "Per Page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Tìm kiếm theo tài khoản và tên hiển thị",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "admin"
+                        }
+                    },
+                    {
+                        "name": "role_id[]",
+                        "in": "query",
+                        "description": "1: admin, 3: staff",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/staff/create": {
+            "post": {
+                "tags": [
+                    "CMS Staff"
+                ],
+                "summary": "CMS tạo nhân viên",
+                "operationId": "v2/staff/store",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "header",
+                        "description": "Ngôn ngữ",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "vi"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "properties": {
+                                            "email": {
+                                                "type": "string"
+                                            },
+                                            "password": {
+                                                "type": "string"
+                                            },
+                                            "display_name": {
+                                                "type": "string"
+                                            },
+                                            "phone_number": {
+                                                "type": "string"
+                                            },
+                                            "role_id": {
+                                                "type": "string"
+                                            },
+                                            "image_data": {
+                                                "type": "string",
+                                                "format": "binary"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/staff/show/{id}": {
+            "get": {
+                "tags": [
+                    "CMS Staff"
+                ],
+                "summary": "CMS chi tiết nhân viên",
+                "operationId": "v2/staff/show",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "header",
+                        "description": "Ngôn ngữ",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "vi"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID người dùng",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/staff/update/{id}": {
+            "post": {
+                "tags": [
+                    "CMS Staff"
+                ],
+                "summary": "CMS edit staff",
+                "operationId": "v2/staff/update",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "header",
+                        "description": "Ngôn ngữ",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "vi"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Staff",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": ""
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "properties": {
+                                            "password": {
+                                                "type": "string"
+                                            },
+                                            "display_name": {
+                                                "type": "string"
+                                            },
+                                            "phone_number": {
+                                                "type": "string"
+                                            },
+                                            "role_id": {
+                                                "type": "string"
+                                            },
+                                            "image_delete": {
+                                                "type": "boolean"
+                                            },
+                                            "image_data": {
+                                                "type": "string",
+                                                "format": "binary"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v2/staff/multiple-delete": {
+            "delete": {
+                "tags": [
+                    "CMS Staff"
+                ],
+                "summary": "CMS xóa nhiều nhân viên",
+                "operationId": "v2/staff/multiple-delete",
+                "parameters": [
+                    {
+                        "name": "language",
+                        "in": "header",
+                        "description": "Ngôn ngữ",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "vi"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "ids": {
+                                        "description": "Array ids delete",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "example": 8
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v2/auth/login": {
             "post": {
                 "tags": [

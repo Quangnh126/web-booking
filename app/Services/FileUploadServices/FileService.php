@@ -26,18 +26,22 @@ class FileService
             // lấy đường dẫn
             $filePath = $type;
             // size ảnh
-            $imgSize = [800,600];
+//            $imgSize = [800,600];
+//
+//            $thumbnailService = new FileProcessService();
+//
+//            $thumbnailService
+//                ->setImage($req)
+//                ->setSize($imgSize[0], $imgSize[1])
+//                ->setDestinationPath($type)
+//                ->setFileName($imageName)
+//                ->save();
 
-            $thumbnailService = new FileProcessService();
+            $path = $req->storeAs($type, $imageName);
 
-            $thumbnailService
-                ->setImage($req)
-                ->setSize($imgSize[0], $imgSize[1])
-                ->setDestinationPath($type)
-                ->setFileName($imageName)
-                ->save();
+            $serverHTTPAddress = env('APP_URL', '127.0.0.1:8000');
 
-            return $type . '/' . $imageName;
+            return $serverHTTPAddress . '/storage/' . $type . '/' . $imageName;
         }
 
         return false;
@@ -51,13 +55,13 @@ class FileService
      */
     public function checkValidate(object $req): bool
     {
-//        $rules = array('jpeg','jpg','png','gif', 'svg');
-//        $typeOfFile = $req->extension();
+        $rules = array('jpeg','jpg','png','gif', 'svg');
+        $typeOfFile = $req->extension();
 
         $sizeOfFile = number_format($req->getSize() / 10485760,2);
 
-        return $sizeOfFile<10;
-//        return (in_array($typeOfFile, $rules) && $sizeOfFile<10);
+//        return $sizeOfFile<10;
+        return (in_array($typeOfFile, $rules) && $sizeOfFile<10);
     }
 
     /**
@@ -92,5 +96,52 @@ class FileService
                 Log::debug('Xóa file: ' . $key . ' ' . $deleteFile);
             }
         }
+    }
+
+    /**
+     * delete image
+     */
+    public function deleteImage($path): void
+    {
+        $index = strpos($path, 'storage');
+        $newPath = substr($path, $index + 8);
+
+        Storage::delete($newPath);
+    }
+
+    public function storeFile($files, $id, $type)
+    {
+        $data = [];
+        if (count($files) > 1) {
+            foreach ($files as $file) {
+                $data[] = [
+                    'key' => $type,
+                    'file_id' => $id,
+                    'image_data' => $file,
+                    'created_at' => now(),
+                    'updated_At' => now(),
+                ];
+            }
+            return $this->file->insert($data);
+        } else {
+            $data = [
+                'key' => $type,
+                'file_id' => $id,
+                'image_data' => $files[0] ?? null,
+                'created_at' => now(),
+                'updated_At' => now(),
+            ];
+            return $this->file->create($data);
+        }
+    }
+
+    public function getFile($id)
+    {
+        return $this->file->where('id', $id)->first()->image_data ?? '';
+    }
+
+    public function deleteData($id)
+    {
+        return $this->file->where('id', $id)->delete();
     }
 }
