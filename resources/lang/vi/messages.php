@@ -42,6 +42,7 @@ return [
             'edit' => 'Sửa danh mục không thành công!',
             'delete' => 'Xóa danh mục không mục thành công!',
             'not_found' => 'Danh mục :message_error không tồn tại!',
+            'exist' => 'Tên Danh mục đã tồn tại!',
         ],
         'banner' => [
             'create' => 'Tạo Banner không thành công!',

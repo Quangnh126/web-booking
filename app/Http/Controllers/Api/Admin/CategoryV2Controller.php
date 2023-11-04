@@ -1,45 +1,41 @@
 <?php
 
+
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Enums\Constant;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StaffV2Request;
+
 use App\Http\Traits\AuthTrait;
-use App\Models\User;
-use App\Services\Admin\StaffV2Service;
-use App\Services\FileUploadServices\FileService;
+use App\Models\Category;
+use App\Services\Admin\CategoryV2Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Enums\Constant;
 
-class StaffV2Controller extends Controller
+class CategoryV2Controller
 {
     use AuthTrait;
 
-    private $user;
-    private $staffV2Service;
-    private $fileService;
+    private $category;
+    private $categoryV2Service;
 
     public function __construct(
-        User $user,
-        StaffV2Service $staffV2Service,
-        FileService $fileService
+        Category $category,
+        CategoryV2Service $categoryV2Service
     )
     {
-        $this->user = $user;
-        $this->staffV2Service = $staffV2Service;
-        $this->fileService = $fileService;
+        $this->category = $category;
+        $this->categoryV2Service = $categoryV2Service;
     }
 
     /**
      * @author Quangnh
      * @OA\Get (
-     *     path="/api/v2/staff/index",
-     *     tags={"CMS Staff"},
-     *     summary="CMS danh sách nhân viên",
+     *     path="/api/v2/category/index",
+     *     tags={"CMS Category"},
+     *     summary="CMS danh sách thể loại",
      *     security={{"bearerAuth":{}}},
-     *     operationId="v2/staff/index",
+     *     operationId="v2/category/index",
      *     @OA\Parameter(
      *          in="header",
      *          name="language",
@@ -74,20 +70,10 @@ class StaffV2Controller extends Controller
      *          in="query",
      *          name="search",
      *          required=false,
-     *          description="Tìm kiếm theo tài khoản và tên hiển thị",
+     *          description="Tìm kiếm theo tên danh mục",
      *          @OA\Schema(
      *            type="string",
-     *            example="admin",
-     *          )
-     *     ),
-     *     @OA\Parameter(
-     *          in="query",
-     *          name="role_id[]",
-     *          required=false,
-     *          description="1: admin, 3: staff",
-     *          @OA\Schema(
-     *            type="array",
-     *            @OA\Items(type="integer"),
+     *            example="1 người",
      *          )
      *     ),
      *     @OA\Response(
@@ -99,17 +85,101 @@ class StaffV2Controller extends Controller
      *     ),
      * )
      */
-    public function listStaff(StaffV2Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
             $user = $this->getCurrentLoggedIn();
-            if ($user->can('viewStaff', $user)) {
-                $staff = $this->staffV2Service->listStaff($request);
+            if ($user->can('viewAny', $user)) {
+                $category = $this->categoryV2Service->listCategory($request);
 
                 return response()->json([
                     'status' => Constant::SUCCESS_CODE,
                     'message' => trans('messages.success.success'),
-                    'data' => $staff
+                    'data' => $category
+                ], Constant::SUCCESS_CODE);
+            } else {
+                return response()->json([
+                    'status' => Constant::BAD_REQUEST_CODE,
+                    'message' => trans('messages.errors.users.not_permission'),
+                    'data' => []
+                ], Constant::BAD_REQUEST_CODE);
+            }
+
+        } catch (\Throwable $th) {
+
+            return response()->json([
+                'status' => Constant::FALSE_CODE,
+                'message' => $th->getMessage(),
+                'data' => []
+            ], Constant::INTERNAL_SV_ERROR_CODE);
+
+        }
+    }
+
+    /**
+     * @OA\Post (
+     *     path="/api/v2/category/create",
+     *     tags={"CMS Category"},
+     *     summary="CMS tạo danh mục",
+     *     security={{"bearerAuth":{}}},
+     *     operationId="v2/category/create",
+     *     @OA\Parameter(
+     *          in="header",
+     *          name="language",
+     *          required=false,
+     *          description="Ngôn ngữ",
+     *          @OA\Schema(
+     *            type="string",
+     *            example="vi",
+     *          )
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 allOf={
+     *                     @OA\Schema(
+     *                          @OA\Property(property="name", type="string"),
+     *                          @OA\Property(property="description", type="string"),
+     *                       )
+     *                      }
+     *                     )
+     *                  )
+     *              ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *             @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Success."),
+     *          )
+     *     ),
+     * )
+     */
+    public function createCategory(Request $request): JsonResponse
+    {
+        try {
+            $user = $this->getCurrentLoggedIn();
+            if ($user->can('viewAny', $user)) {
+                DB::beginTransaction();
+
+                $array_data = $this->getRequestCategory($request);
+                $checkCategoryExist = $this->categoryV2Service->checkNameExist($array_data);
+
+                if ($checkCategoryExist) {
+                    $category = $this->categoryV2Service->createCategory($array_data);
+                } else {
+                    return response()->json([
+                        'status' => Constant::FORBIDDEN_CODE,
+                        'message' => trans('messages.errors.category.exist'),
+                        'data' => [],
+                    ], Constant::FORBIDDEN_CODE);
+                }
+
+                DB::commit();
+                return response()->json([
+                    'status' => Constant::SUCCESS_CODE,
+                    'message' => trans('messages.success.success'),
+                    'data' => $category
                 ], Constant::SUCCESS_CODE);
             } else {
                 return response()->json([
@@ -132,101 +202,12 @@ class StaffV2Controller extends Controller
 
     /**
      * @author Quangnh
-     * @OA\Post (
-     *     path="/api/v2/staff/create",
-     *     tags={"CMS Staff"},
-     *     summary="CMS tạo nhân viên",
-     *     security={{"bearerAuth":{}}},
-     *     operationId="v2/staff/store",
-     *     @OA\Parameter(
-     *          in="header",
-     *          name="language",
-     *          required=false,
-     *          description="Ngôn ngữ",
-     *          @OA\Schema(
-     *            type="string",
-     *            example="vi",
-     *          )
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                 allOf={
-     *                     @OA\Schema(
-     *                          @OA\Property(property="email", type="string"),
-     *                          @OA\Property(property="password", type="string"),
-     *                          @OA\Property(property="display_name", type="string"),
-     *                          @OA\Property(property="phone_number", type="string"),
-     *                          @OA\Property(property="role_id", type="string"),
-     *                          @OA\Property(property="image_data", type="string", format="binary"),     *                     )
-     *                      }
-     *                     )
-     *                  )
-     *              ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *             @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Success."),
-     *          )
-     *     ),
-     * )
-     */
-    public function store(StaffV2Request $request): JsonResponse
-    {
-        try {
-            if ($request->password) {
-                $data['password'] = bcrypt($request->password);
-            }
-            DB::beginTransaction();
-
-            if ($request->image_data) {
-                $pathName = $this->fileService->getFilePath($request->image_data, Constant::PATH_PROFILE);
-
-                if (!$pathName) {
-                    return response()->json([
-                        'status' => Constant::BAD_REQUEST_CODE,
-                        'errorCode' => 'E_UC4_1',
-                        'message' => trans('messages.errors.image.not_available'),
-                        'data' => []
-                    ], Constant::BAD_REQUEST_CODE);
-                }
-
-                $request->avatar = $pathName;
-            }
-
-            $data = $this->getStaffRequest($request);
-
-            $staff = $this->staffV2Service->createStaff($data);
-
-            DB::commit();
-            return response()->json([
-                'status' => Constant::SUCCESS_CODE,
-                'message' => trans('messages.success.staff.create'),
-                'data' => $staff
-            ], Constant::SUCCESS_CODE);
-
-        } catch (\Throwable $th) {
-
-            DB::rollBack();
-            return response()->json([
-                'status' => Constant::FALSE_CODE,
-                'message' => $th->getMessage(),
-                'data' => []
-            ], Constant::INTERNAL_SV_ERROR_CODE);
-
-        }
-    }
-
-    /**
-     * @author Quangnh
      * @OA\Get (
-     *     path="/api/v2/staff/show/{id}",
-     *     tags={"CMS Staff"},
-     *     summary="CMS chi tiết nhân viên",
+     *     path="/api/v2/category/show/{id}",
+     *     tags={"CMS Category"},
+     *     summary="CMS chi tiết danh mục",
      *     security={{"bearerAuth":{}}},
-     *     operationId="v2/staff/show",
+     *     operationId="v2/category/show",
      *     @OA\Parameter(
      *          in="header",
      *          name="language",
@@ -241,7 +222,7 @@ class StaffV2Controller extends Controller
      *          in="path",
      *          name="id",
      *          required=true,
-     *          description="ID người dùng",
+     *          description="ID danh mục",
      *          @OA\Schema(
      *            type="integer",
      *            example=1,
@@ -256,15 +237,15 @@ class StaffV2Controller extends Controller
      *     ),
      * )
      */
-    public function show(int $id): JsonResponse
+    public function showCategory(int $id): JsonResponse
     {
         try {
-            $staff = $this->user->select('id', 'email', 'display_name', 'phone_number', 'role_id', 'avatar')->where('id', $id)->first();
+            $category = $this->category->select('id', 'name', 'description')->where('id', $id)->first();
 
             return response()->json([
                 'status' => Constant::SUCCESS_CODE,
                 'message' => trans('messages.success.success'),
-                'data' => $staff
+                'data' => $category
             ], Constant::SUCCESS_CODE);
 
         } catch (\Throwable $th) {
@@ -280,11 +261,11 @@ class StaffV2Controller extends Controller
 
     /**
      * @OA\Post (
-     *     path="/api/v2/staff/update/{id}",
-     *     tags={"CMS Staff"},
-     *     summary="CMS edit staff",
+     *     path="/api/v2/category/update/{id}",
+     *     tags={"CMS Category"},
+     *     summary="CMS chỉnh sửa danh mục",
      *     security={{"bearerAuth":{}}},
-     *     operationId="v2/staff/update",
+     *     operationId="v2/category/update",
      *     @OA\Parameter(
      *          in="header",
      *          name="language",
@@ -299,7 +280,7 @@ class StaffV2Controller extends Controller
      *          in="path",
      *          name="id",
      *          required=true,
-     *          description="ID Staff",
+     *          description="ID Category",
      *          @OA\Schema(
      *            type="integer",
      *            example="",
@@ -311,12 +292,9 @@ class StaffV2Controller extends Controller
      *             @OA\Schema(
      *                 allOf={
      *                     @OA\Schema(
-     *                          @OA\Property(property="password", type="string"),
-     *                          @OA\Property(property="display_name", type="string"),
-     *                          @OA\Property(property="phone_number", type="string"),
-     *                          @OA\Property(property="role_id", type="string"),
-     *                          @OA\Property(property="image_delete", type="boolean"),
-     *                          @OA\Property(property="image_data", type="string", format="binary"),     *                     )
+     *                          @OA\Property(property="name", type="string"),
+     *                          @OA\Property(property="description", type="string"),
+     *                         )
      *                      }
      *                     )
      *                  )
@@ -330,54 +308,37 @@ class StaffV2Controller extends Controller
      *     ),
      * )
      */
-    public function update(StaffV2Request $request): JsonResponse
+    public function updateCategory(Request $request): JsonResponse
     {
         try {
-            DB::beginTransaction();
-            $id = $request->id;
-            $checkStaff = $this->user->where('id', $id)->first();
-            if (!isset($checkStaff)) {
+            $user = $this->getCurrentLoggedIn();
+            if ($user->can('viewAny', $user)) {
+                DB::beginTransaction();
 
-                DB::rollBack();
+                $id = $request->id;
+                $array_data = $this->getRequestCategory($request);
+                $category = $this->categoryV2Service->updateCategory($array_data, $id);
+
+                DB::commit();
+                return response()->json([
+                    'status' => Constant::SUCCESS_CODE,
+                    'message' => trans('messages.success.success'),
+                    'data' => $category
+                ], Constant::SUCCESS_CODE);
+            } else {
                 return response()->json([
                     'status' => Constant::BAD_REQUEST_CODE,
-                    'message' => trans('messages.errors.staff.not_found'),
+                    'message' => trans('messages.errors.users.not_permission'),
                     'data' => []
                 ], Constant::BAD_REQUEST_CODE);
             }
 
-            if ($request->image_data) {
-                $pathName = $this->fileService->getFilePath($request->image_data, Constant::PATH_PROFILE);
-
-                if (!$pathName) {
-                    return response()->json([
-                        'status' => Constant::BAD_REQUEST_CODE,
-                        'errorCode' => 'E_UC4_1',
-                        'message' => trans('messages.errors.image.not_available'),
-                        'data' => []
-                    ], Constant::BAD_REQUEST_CODE);
-                }
-
-                $request->avatar = $pathName;
-            }
-
-            $data = $this->getStaffRequest($request);
-
-            $staff = $this->staffV2Service->updateStaff($data, $id);
-
-            DB::commit();
-            return response()->json([
-                'status' => Constant::SUCCESS_CODE,
-                'message' => trans('messages.success.staff.edit'),
-                'data' => $staff
-            ], Constant::SUCCESS_CODE);
-
         } catch (\Throwable $th) {
 
-            DB::rollBack();
             return response()->json([
                 'status' => Constant::FALSE_CODE,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
+                'data' => []
             ], Constant::INTERNAL_SV_ERROR_CODE);
 
         }
@@ -385,11 +346,11 @@ class StaffV2Controller extends Controller
 
     /**
      * @OA\Delete  (
-     *     path="/api/v2/staff/multiple-delete",
-     *     tags={"CMS Staff"},
-     *     summary="CMS xóa nhiều nhân viên",
+     *     path="/api/v2/category/multiple-delete",
+     *     tags={"CMS Category"},
+     *     summary="CMS xóa nhiều danh mục",
      *     security={{"bearerAuth":{}}},
-     *     operationId="v2/staff/multiple-delete",
+     *     operationId="v2/category/multiple-delete",
      *     @OA\Parameter(
      *          in="header",
      *          name="language",
@@ -423,31 +384,19 @@ class StaffV2Controller extends Controller
      *     ),
      * )
      */
-    public function multipleDelete(StaffV2Request $request): JsonResponse
+    public function multipleDeleteCategory(Request $request): JsonResponse
     {
         try {
 
             DB::beginTransaction();
             $ids_delete = (array)$request->ids;
-            $check_id_not_exist = $this->staffV2Service->checkIdNotExist($ids_delete);
 
-            if (!empty($check_id_not_exist)) {
-                DB::rollBack();
-
-                return response()->json([
-                    'status' => Constant::BAD_REQUEST_CODE,
-                    'message' => trans('messages.errors.staff.not_found', ['message_error' => $check_id_not_exist]),
-                    'data' => []
-                ], Constant::BAD_REQUEST_CODE);
-
-            }
-
-            $this->staffV2Service->deleteMultipleStaff($ids_delete);
+            $this->categoryV2Service->deleteMultipleCategory($ids_delete);
 
             DB::commit();
             return response()->json([
                 'status' => Constant::SUCCESS_CODE,
-                'message' => trans('messages.success.staff.delete'),
+                'message' => trans('messages.success.category.delete'),
                 'data' => []
 
             ], Constant::SUCCESS_CODE);
@@ -466,24 +415,13 @@ class StaffV2Controller extends Controller
         }
     }
 
-    public function getStaffRequest($request): array
+    public function getRequestCategory($request): array
     {
-        if ($request->password) {
-            $data['password'] = bcrypt($request->password);
+        if ($request->name) {
+            $data['name'] = $request->name;
         }
 
-        if ($request->avatar) {
-            $data['avatar'] = $request->avatar;
-        }
-
-        if ($request->email) {
-            $data['email'] = $request->email;
-        }
-
-        $data['display_name'] = $request->display_name;
-        $data['image_delete'] = $request->image_delete;
-        $data['phone_number'] = $request->phone_number;
-        $data['role_id'] = $request->role_id;
+        $data['description'] = $request->description;
 
         return $data;
     }
