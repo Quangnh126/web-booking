@@ -484,6 +484,7 @@ class StaffV2Controller extends Controller
         $data['image_delete'] = $request->image_delete;
         $data['phone_number'] = $request->phone_number;
         $data['role_id'] = $request->role_id;
+        $data['status'] = 1;
 
         return $data;
     }
