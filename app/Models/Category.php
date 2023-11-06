@@ -22,9 +22,9 @@ class Category extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'id',
         'name',
         'description',
-        'image_data',
     ];
 
     public function scopeOfId($query, $type)

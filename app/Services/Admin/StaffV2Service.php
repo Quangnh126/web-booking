@@ -6,16 +6,20 @@ namespace App\Services\Admin;
 
 use App\Enums\Constant;
 use App\Models\User;
+use App\Services\FileUploadServices\FileService;
 
 class StaffV2Service
 {
     private $user;
+    private $fileService;
 
     public function __construct(
-        User $user
+        User $user,
+        FileService $fileService
     )
     {
         $this->user = $user;
+        $this->fileService = $fileService;
     }
 
     /**
@@ -92,7 +96,12 @@ class StaffV2Service
      */
     public function deleteMultipleStaff(array $ids_delete): void
     {
-        $this->user->whereIn('id', $ids_delete)->delete();
+        $staff = $this->user->whereIn('id', $ids_delete)->get();
+        foreach ($staff as $item){
+            $this->fileService->deleteImage($item->avatar);
+            $item->delete();
+        }
+
     }
 
 }
