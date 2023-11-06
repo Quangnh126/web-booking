@@ -33,6 +33,18 @@ return [
             'edit' => 'Sửa nhân viên thành công!',
             'delete' => 'Xóa nhân viên thành công!',
         ],
+        'room' => [
+            'create' => 'Tạo phòng thành công!',
+            'edit' => 'Sửa thông tin phòng thành công!',
+            'delete' => 'Xóa thông tin phòng thành công!',
+            'de-active' => 'Cập nhật tình trạng phòng thành công!',
+        ],
+        'tour' => [
+            'create' => 'Tạo phòng thành công!',
+            'edit' => 'Sửa thông tin phòng thành công!',
+            'delete' => 'Xóa thông tin phòng thành công!',
+            'de-active' => 'Cập nhật tình trạng phòng thành công!',
+        ],
     ],
     'errors' => [
         'errors' => 'Thất bại!',
@@ -77,6 +89,12 @@ return [
             'edit' => 'Sửa nhân viên không thành công!',
             'delete' => 'Xóa nhân viên không mục thành công!',
             'not_found' => 'Nhân viên :message_error không tồn tại!',
+        ],
+        'room' => [
+            'banner' => 'Đã quá 5 ảnh banner',
+        ],
+        'tour' => [
+            'banner' => 'Đã quá 5 ảnh banner',
         ],
     ]
 ];

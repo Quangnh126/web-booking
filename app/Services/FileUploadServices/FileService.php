@@ -2,6 +2,7 @@
 
 namespace App\Services\FileUploadServices;
 
+use App\Models\File;
 use App\Models\MerchandiseImages;
 use App\Models\MessageImages;
 use Illuminate\Support\Facades\Log;
@@ -10,6 +11,15 @@ use Illuminate\Support\Str;
 
 class FileService
 {
+    private $file;
+
+    public function __construct(
+        File $file
+    )
+    {
+        $this->file = $file;
+    }
+
     /**
      * store path
      * @param object $req

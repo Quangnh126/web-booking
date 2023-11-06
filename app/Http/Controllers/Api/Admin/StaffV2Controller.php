@@ -316,7 +316,8 @@ class StaffV2Controller extends Controller
      *                          @OA\Property(property="phone_number", type="string"),
      *                          @OA\Property(property="role_id", type="string"),
      *                          @OA\Property(property="image_delete", type="boolean"),
-     *                          @OA\Property(property="image_data", type="string", format="binary"),     *                     )
+     *                          @OA\Property(property="image_data", type="string", format="binary"),
+     *                        )
      *                      }
      *                     )
      *                  )
@@ -347,6 +348,7 @@ class StaffV2Controller extends Controller
             }
 
             if ($request->image_data) {
+                $this->fileService->deleteImage($checkStaff->avatar);
                 $pathName = $this->fileService->getFilePath($request->image_data, Constant::PATH_PROFILE);
 
                 if (!$pathName) {

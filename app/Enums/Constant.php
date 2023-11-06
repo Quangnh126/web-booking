@@ -28,5 +28,6 @@ class Constant
     const PATH_PROFILE              = 'profile';
     const PATH_CATEGORY             = 'category';
     const PATH_ROOM                 = 'room';
+    const PATH_TOUR                 = 'tour';
     const PATH_APP                  = 'app';
 }
