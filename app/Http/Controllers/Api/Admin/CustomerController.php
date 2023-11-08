@@ -251,7 +251,7 @@ class CustomerController extends Controller
                 ], Constant::BAD_REQUEST_CODE);
             }
 
-            $this->customerService->deleteMultipleStaff($ids_delete);
+            $this->customerService->deleteMultipleCustomer($ids_delete);
 
             DB::commit();
             return response()->json([

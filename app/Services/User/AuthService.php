@@ -96,4 +96,9 @@ class AuthService
 
         Log::debug('Xóa ảnh đại diện: ' . $deleteAvatar);
     }
+
+    public function register(array $req)
+    {
+        return $this->user->create($req);
+    }
 }

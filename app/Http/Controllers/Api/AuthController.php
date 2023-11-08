@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Services\User\RegisterService;
+use App\Services\User\AuthService;
 use App\Services\FileUploadServices\FileService;
 
 class AuthController extends Controller
@@ -19,16 +19,16 @@ class AuthController extends Controller
     use AuthTrait;
 
     private $user;
-    private $registerService;
+    private $authService;
     private $fileService;
 
     public function __construct(
         User $user,
-        RegisterService $registerService,
+        AuthService $authService,
         FileService $fileService
     ) {
         $this->user = $user;
-        $this->registerService = $registerService;
+        $this->authService = $authService;
         $this->fileService = $fileService;
     }
 
@@ -194,7 +194,7 @@ class AuthController extends Controller
             DB::beginTransaction();
             $data = $this->getCustomerRequest($request);
 
-            $customer = $this->registerService->register($data);
+            $customer = $this->authService->register($data);
 
             DB::commit();
             return response()->json([

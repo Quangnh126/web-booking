@@ -37,7 +37,7 @@ class CustomerService extends Service
     public function checkIdNotExist(array $ids_delete): string
     {
 
-        $list_users = $this->user->whereIn('role_id', [User::$staff, User::$admin])->pluck('id')->toArray();
+        $list_users = $this->user->where('role_id', User::$user)->pluck('id')->toArray();
         $ids_not_exist = implode(", ", array_diff($ids_delete, $list_users));
 
         return $ids_not_exist;
@@ -46,7 +46,7 @@ class CustomerService extends Service
     /**
      * @param array $ids_delete
      */
-    public function deleteMultipleStaff(array $ids_delete): void
+    public function deleteMultipleCustomer(array $ids_delete): void
     {
         $staff = $this->user->whereIn('id', $ids_delete)->get();
         foreach ($staff as $item) {
