@@ -34,12 +34,14 @@ class CategoryV2Request extends FormRequest
             case 'create':
                 return [
                     'name' => 'required|string|max:65',
+                    'number' => 'required',
                     'description' => 'string',
                 ];
                 break;
             case 'update':
                 return [
                     'name' => 'required|string|max:65',
+                    'number' => 'required',
                     'description' => 'string'
                 ];
                 break;
@@ -66,7 +68,8 @@ class CategoryV2Request extends FormRequest
         if ($lang == 'vi') {
             return [
                 'name.required' => 'Tên danh mục là trường bắt buộc',
-                'name.max' => 'Tên danh mục không quá 65 kí tự'
+                'name.max' => 'Tên danh mục không quá 65 kí tự',
+                'number.required' => 'Số lượng người là trường bắt buộc',
             ];
         }
     }

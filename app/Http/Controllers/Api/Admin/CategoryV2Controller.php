@@ -140,6 +140,7 @@ class CategoryV2Controller
      *                 allOf={
      *                     @OA\Schema(
      *                          @OA\Property(property="name", type="string"),
+     *                          @OA\Property(property="number", type="string"),
      *                          @OA\Property(property="description", type="string"),
      *                       )
      *                      }
@@ -240,7 +241,7 @@ class CategoryV2Controller
     public function showCategory(int $id): JsonResponse
     {
         try {
-            $category = $this->category->select('id', 'name', 'description')->where('id', $id)->first();
+            $category = $this->category->select('id', 'name', 'description', 'number')->where('id', $id)->first();
 
             return response()->json([
                 'status' => Constant::SUCCESS_CODE,
@@ -293,6 +294,7 @@ class CategoryV2Controller
      *                 allOf={
      *                     @OA\Schema(
      *                          @OA\Property(property="name", type="string"),
+     *                          @OA\Property(property="number", type="string"),
      *                          @OA\Property(property="description", type="string"),
      *                         )
      *                      }
@@ -421,6 +423,7 @@ class CategoryV2Controller
             $data['name'] = $request->name;
         }
 
+        $data['number'] = $request->number;
         $data['description'] = $request->description;
 
         return $data;

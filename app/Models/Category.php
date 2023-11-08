@@ -25,6 +25,7 @@ class Category extends Model
         'id',
         'name',
         'description',
+        'number',
     ];
 
     public function scopeOfId($query, $type)
