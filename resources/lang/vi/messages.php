@@ -90,6 +90,12 @@ return [
             'delete' => 'Xóa nhân viên không mục thành công!',
             'not_found' => 'Nhân viên :message_error không tồn tại!',
         ],
+        'customer' => [
+            'create' => 'Tạo khách hàng không thành công!',
+            'edit' => 'Sửa khách hàng không thành công!',
+            'delete' => 'Xóa khách hàng không mục thành công!',
+            'not_found' => 'khách hàng :message_error không tồn tại!',
+        ],
         'room' => [
             'banner' => 'Đã quá 5 ảnh banner',
         ],
