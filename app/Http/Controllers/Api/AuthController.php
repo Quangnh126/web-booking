@@ -2,24 +2,34 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\Constant;
-use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
+use App\Enums\Constant;
 use Illuminate\Http\Request;
+use App\Http\Traits\AuthTrait;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Services\User\RegisterService;
+use App\Services\FileUploadServices\FileService;
 
 class AuthController extends Controller
 {
-    private $userService;
+    use AuthTrait;
+
     private $user;
+    private $registerService;
+    private $fileService;
 
     public function __construct(
-        User $user
-    )
-    {
+        User $user,
+        RegisterService $registerService,
+        FileService $fileService
+    ) {
         $this->user = $user;
+        $this->registerService = $registerService;
+        $this->fileService = $fileService;
     }
 
     /**
@@ -133,6 +143,92 @@ class AuthController extends Controller
                 'data' => []
             ], Constant::INTERNAL_SV_ERROR_CODE);
         }
+    }
+
+    /**
+     * @author Quangnh
+     * @OA\Post (
+     *     path="/api/register",
+     *     tags={"Tài khoản"},
+     *     summary="Đăng kí tài khoản User",
+     *     security={{"bearerAuth":{}}},
+     *     operationId="/register",
+     *     @OA\Parameter(
+     *          in="header",
+     *          name="language",
+     *          required=false,
+     *          description="Ngôn ngữ",
+     *          @OA\Schema(
+     *            type="string",
+     *            example="vi",
+     *          )
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 allOf={
+     *                     @OA\Schema(
+     *                          @OA\Property(property="email", type="string"),
+     *                          @OA\Property(property="password", type="string"),
+     *                          @OA\Property(property="display_name", type="string"),
+     *                          @OA\Property(property="phone_number", type="string"),
+     *                          @OA\Property(property="address", type="string"),
+     *                          )
+     *                      }
+     *                     )
+     *                  )
+     *              ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *             @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Success."),
+     *          )
+     *     ),
+     * )
+     */
+    public function register(Request $request): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+            $data = $this->getCustomerRequest($request);
+
+            $customer = $this->registerService->register($data);
+
+            DB::commit();
+            return response()->json([
+                'status' => Constant::SUCCESS_CODE,
+                'message' => trans('messages.success.customer.create'),
+                'data' => $customer
+            ], Constant::SUCCESS_CODE);
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+            return response()->json([
+                'status' => Constant::FALSE_CODE,
+                'message' => $th->getMessage(),
+                'data' => []
+            ], Constant::INTERNAL_SV_ERROR_CODE);
+        }
+    }
+
+    public function getCustomerRequest($request): array
+    {
+        if ($request->password) {
+            $data['password'] = bcrypt($request->password);
+        }
+
+        if ($request->email) {
+            $data['email'] = $request->email;
+        }
+
+        $data['display_name'] = $request->display_name;
+        $data['phone_number'] = $request->phone_number;
+        $data['role_id'] = 2;
+        $data['status'] = 1;
+
+        return $data;
     }
 
 }

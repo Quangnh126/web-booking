@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('email', 255);
             $table->string('password', 255);
-            $table->longText('avatar');
+            $table->longText('avatar')->nullable();
             $table->string('display_name', 55);
             $table->string('phone_number', 15);
             $table->tinyInteger('role_id');
