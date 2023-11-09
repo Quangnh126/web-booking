@@ -35,8 +35,8 @@ class UserController extends Controller
      * @author Quangnh
      * @OA\Get (
      *     path="/api/user/show/{id}",
-     *     tags={"CMS User"},
-     *     summary="CMS chi tiết khách hàng",
+     *     tags={"User"},
+     *     summary="Chi tiết khách hàng",
      *     security={{"bearerAuth":{}}},
      *     operationId="/user/show",
      *     @OA\Parameter(
@@ -90,9 +90,9 @@ class UserController extends Controller
 
     /**
      * @OA\Post (
-     *     path="api/user/update/{id}",
-     *     tags={"CMS User"},
-     *     summary="CMS edit user",
+     *     path="/api/user/update/{id}",
+     *     tags={"User"},
+     *     summary="edit user",
      *     security={{"bearerAuth":{}}},
      *     operationId="user/update",
      *     @OA\Parameter(
@@ -123,6 +123,7 @@ class UserController extends Controller
      *                     @OA\Schema(
      *                          @OA\Property(property="display_name", type="string"),
      *                          @OA\Property(property="phone_number", type="string"),
+     *                          @OA\Property(property="detail_address", type="string"),
      *                          @OA\Property(property="role_id", type="string"),
      *                          @OA\Property(property="image_delete", type="boolean"),
      *                          @OA\Property(property="image_data", type="string", format="binary"),
@@ -194,8 +195,6 @@ class UserController extends Controller
 
     public function getUserRequest($request): array
     {
-
-
         if ($request->avatar) {
             $data['avatar'] = $request->avatar;
         }
@@ -205,6 +204,7 @@ class UserController extends Controller
         }
 
         $data['display_name'] = $request->display_name;
+        $data['detail_address'] = $request->detail_address;
         $data['image_delete'] = $request->image_delete;
         $data['phone_number'] = $request->phone_number;
         $data['role_id'] = $request->role_id;
