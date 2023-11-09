@@ -12,6 +12,8 @@ class Room extends Model
     use HasFactory;
 
     protected $table = 'rooms';
+    public static $active = 1;
+    public static $non_active = 0;
 
     protected $hidden = [
         'created_at',
@@ -46,6 +48,11 @@ class Room extends Model
     {
         return $this->hasOne(Category::class, 'id', 'type')
             ->select('id', 'name', 'description');
+    }
+
+    public function scopeOfActive()
+    {
+        return $this->where('status', '=', 1);
     }
 
 }
