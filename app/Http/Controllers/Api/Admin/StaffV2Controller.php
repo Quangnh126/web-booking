@@ -158,6 +158,7 @@ class StaffV2Controller extends Controller
      *                          @OA\Property(property="password", type="string"),
      *                          @OA\Property(property="display_name", type="string"),
      *                          @OA\Property(property="phone_number", type="string"),
+     *                          @OA\Property(property="detail_address", type="string"),
      *                          @OA\Property(property="role_id", type="string"),
      *                          @OA\Property(property="image_data", type="string", format="binary"),     *                     )
      *                      }
@@ -314,6 +315,7 @@ class StaffV2Controller extends Controller
      *                          @OA\Property(property="password", type="string"),
      *                          @OA\Property(property="display_name", type="string"),
      *                          @OA\Property(property="phone_number", type="string"),
+     *                          @OA\Property(property="detail_address", type="string"),
      *                          @OA\Property(property="role_id", type="string"),
      *                          @OA\Property(property="image_delete", type="boolean"),
      *                          @OA\Property(property="image_data", type="string", format="binary"),
@@ -485,6 +487,7 @@ class StaffV2Controller extends Controller
         $data['display_name'] = $request->display_name;
         $data['image_delete'] = $request->image_delete;
         $data['phone_number'] = $request->phone_number;
+        $data['detail_address'] = $request->detail_address;
         $data['role_id'] = $request->role_id;
         $data['status'] = 1;
 
