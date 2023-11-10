@@ -42,6 +42,16 @@ class AuthService
         Log::debug('Mật khẩu mới: ' . $newPassword);
     }
 
+    public function changePassword($id, string $password)
+    {
+        $newPassword = $this->user->where('id', $id)->update([
+            'password' => Hash::make($password)
+        ]);
+
+        Log::debug('Mật khẩu mới: ' . $newPassword);
+        return $newPassword;
+    }
+
     /**
      * edit profile
      * @param object $user

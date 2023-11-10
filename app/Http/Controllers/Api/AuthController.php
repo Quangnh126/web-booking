@@ -128,7 +128,7 @@ class AuthController extends Controller
             $data['role'] = $user->role_id == 2 ? Role::$user : Role::$admin;
             $data['token'] = $user->createToken($request->device_token)->plainTextToken;
 
-            ($user->verify == 1) ? $data['isVerify'] = $user->verify : $data = ['isVerify' => $user->verify];
+//            ($user->verify == 1) ? $data['isVerify'] = $user->verify : $data = ['isVerify' => $user->verify];
 
             return response()->json([
                 'status' => Constant::SUCCESS_CODE,
@@ -173,7 +173,7 @@ class AuthController extends Controller
      *                          @OA\Property(property="password", type="string"),
      *                          @OA\Property(property="display_name", type="string"),
      *                          @OA\Property(property="phone_number", type="string"),
-     *                          @OA\Property(property="address", type="string"),
+     *                          @OA\Property(property="detail_address", type="string"),
      *                          )
      *                      }
      *                     )
@@ -224,6 +224,7 @@ class AuthController extends Controller
         }
 
         $data['display_name'] = $request->display_name;
+        $data['detail_address'] = $request->detail_address;
         $data['phone_number'] = $request->phone_number;
         $data['role_id'] = 2;
         $data['status'] = 1;
