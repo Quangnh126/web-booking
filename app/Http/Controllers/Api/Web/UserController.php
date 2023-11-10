@@ -6,10 +6,13 @@ use App\Models\User;
 use App\Enums\Constant;
 use Illuminate\Http\Request;
 use App\Http\Traits\AuthTrait;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use App\Services\Web\UserService;
+use Illuminate\Http\JsonResponse;
+use App\Services\User\AuthService;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Services\FileUploadServices\FileService;
 
 class UserController extends Controller
@@ -20,15 +23,19 @@ class UserController extends Controller
     private $user;
     private $userService;
     private $fileService;
+    private $authService;
 
     public function __construct(
         User $user,
         UserService $userService,
-        FileService $fileService
+        FileService $fileService,
+        AuthService $authService
     ) {
         $this->user = $user;
         $this->userService = $userService;
         $this->fileService = $fileService;
+        $this->authService = $authService;
+
     }
 
     /**
@@ -124,7 +131,6 @@ class UserController extends Controller
      *                          @OA\Property(property="display_name", type="string"),
      *                          @OA\Property(property="phone_number", type="string"),
      *                          @OA\Property(property="detail_address", type="string"),
-     *                          @OA\Property(property="role_id", type="string"),
      *                          @OA\Property(property="image_delete", type="boolean"),
      *                          @OA\Property(property="image_data", type="string", format="binary"),
      *                        )
@@ -207,9 +213,106 @@ class UserController extends Controller
         $data['detail_address'] = $request->detail_address;
         $data['image_delete'] = $request->image_delete;
         $data['phone_number'] = $request->phone_number;
-        $data['role_id'] = $request->role_id;
+        $data['role_id'] = 2;
         $data['status'] = 1;
 
         return $data;
+    }
+
+    /**
+     * @OA\Post (
+     *     path="/api/user/updatePs/{id}",
+     *     tags={"User"},
+     *     summary="edit password user",
+     *     security={{"bearerAuth":{}}},
+     *     operationId="user/updatePs",
+     *     @OA\Parameter(
+     *          in="header",
+     *          name="language",
+     *          required=false,
+     *          description="Ngôn ngữ",
+     *          @OA\Schema(
+     *            type="string",
+     *            example="vi",
+     *          )
+     *     ),
+     *     @OA\Parameter(
+     *          in="path",
+     *          name="id",
+     *          required=true,
+     *          description="ID user",
+     *          @OA\Schema(
+     *            type="integer",
+     *            example="",
+     *          )
+     *     ),
+     *     @OA\RequestBody(
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 allOf={
+     *                     @OA\Schema(
+     *                          @OA\Property(property="password", type="string"),
+     *                          @OA\Property(property="newPassword", type="string"),
+     *                        )
+     *                      }
+     *                     )
+     *                  )
+     *              ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *             @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Success."),
+     *          )
+     *     ),
+     * )
+     */
+    public function updatePs(Request $request): JsonResponse
+    {
+        try {
+            
+            DB::beginTransaction();
+            $id = $request->id;
+            $checkUser = $this->user->where('id', $id)->first();
+            if (!isset($checkUser)) {
+
+                DB::rollBack();
+                return response()->json([
+                    'status' => Constant::BAD_REQUEST_CODE,
+                    'message' => trans('messages.errors.customer.not_found'),
+                    'data' => []
+                ], Constant::BAD_REQUEST_CODE);
+            }
+
+            $credentials = [
+                'email' => $checkUser->email,
+                'password' => $request->password
+            ];
+
+            if (!Hash::check($request->password, $checkUser->password)){
+                return response()->json([
+                    'status' => Constant::BAD_REQUEST_CODE,
+                    'errorCode' => 'E_UC2_3',
+                    'message' => trans('messages.errors.users.password_not_correct'),
+                    'data' => []
+                ], Constant::BAD_REQUEST_CODE);
+            }
+            $user = $this->authService->changePassword($id, $request->newPassword);
+
+            DB::commit();
+            return response()->json([
+                'status' => Constant::SUCCESS_CODE,
+                'message' => trans('messages.success.customer.edit_password'),
+                'data' => $user
+            ], Constant::SUCCESS_CODE);
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+            return response()->json([
+                'status' => Constant::FALSE_CODE,
+                'message' => $th->getMessage()
+            ], Constant::INTERNAL_SV_ERROR_CODE);
+        }
     }
 }
