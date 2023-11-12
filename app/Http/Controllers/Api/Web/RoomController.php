@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\Web;
 use App\Enums\Constant;
 use App\Http\Controllers\Controller;
 use App\Models\Room;
+use App\Services\Web\OrderService;
 use App\Services\Web\RoomService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,14 +15,17 @@ class RoomController extends Controller
 {
     private $room;
     private $roomService;
+    private $orderService;
 
     public function __construct(
         Room $room,
-        RoomService $roomService
+        RoomService $roomService,
+        OrderService $orderService
     )
     {
         $this->room = $room;
         $this->roomService = $roomService;
+        $this->orderService = $orderService;
     }
 
     /**
@@ -121,12 +125,21 @@ class RoomController extends Controller
     public function index(Request $request):JsonResponse
     {
         try {
-            $room = $this->roomService->filterRoom($request);
+            $rooms = $this->roomService->filterRoom($request);
+
+            foreach ($rooms as $room) {
+                if ($room->type_room == 'tour') {
+                    $allOrder = $this->orderService->getAllOrder($room->id);
+                    $room->can_order = (int) $room->categories->number - count($allOrder);
+                } else {
+                    $room->can_order = 0;
+                }
+            }
 
             return response()->json([
                 'status' => Constant::SUCCESS_CODE,
                 'message' => trans('messages.success.success'),
-                'data' => $room,
+                'data' => $rooms,
             ]);
 
         } catch (\Throwable $th) {

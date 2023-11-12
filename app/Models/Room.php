@@ -26,6 +26,7 @@ class Room extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'id',
         'name',
         'type',
         'description',
@@ -47,12 +48,17 @@ class Room extends Model
     public function categories(): HasOne
     {
         return $this->hasOne(Category::class, 'id', 'type')
-            ->select('id', 'name', 'description');
+            ->select('id', 'name', 'description', 'number');
     }
 
     public function scopeOfActive()
     {
         return $this->where('status', '=', 1);
+    }
+
+    public function scopeOfId($query, $type)
+    {
+        return $query->where('id', $type);
     }
 
 }

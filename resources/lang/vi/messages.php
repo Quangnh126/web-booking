@@ -51,6 +51,11 @@ return [
             'delete' => 'Xóa khách hàng  mục thành công!',
             'not_found' => 'khách hàng :message_error tồn tại!',
         ],
+        'order' => [
+            'booking' => 'Booking thành công!',
+            'update' => 'Cập nhật trạng thái booking thành công!',
+            'cancel' => 'Hủy booking thành công!',
+        ],
     ],
     'errors' => [
         'errors' => 'Thất bại!',
@@ -72,7 +77,7 @@ return [
             'create' => 'Tạo người dùng không thành công!',
             'edit' => 'Sửa người dùng không thành công!',
             'delete' => 'Xóa người dùng không mục thành công!',
-            'not_found' => 'Người dùng :message_error không tồn tại!',
+            'not_found' => 'Người dùng đang bị cấm hoặc không tồn tại!',
             'code' => 'Mã code đã hết hạn hoặc không tồn tại!',
             'email_not_found' => 'Email không tồn tại!',
             'account_not_active' => 'Tài khoản chưa được kích hoạt!',
@@ -104,9 +109,15 @@ return [
         ],
         'room' => [
             'banner' => 'Đã quá 5 ảnh banner',
+            'not_found' => 'Phòng hoặc tour đang không được mở để sử dụng hoặc không tồn tại!',
         ],
         'tour' => [
             'banner' => 'Đã quá 5 ảnh banner',
+            'not_found' => 'Người dùng đang bị cấm hoặc không tồn tại!',
+        ],
+        'order' => [
+            'room-booking' => 'Phòng đã có người đặt vào ngày này !!',
+            'tour-booking' => 'Tour này đã đủ người đăng kí !!',
         ],
     ]
 ];
