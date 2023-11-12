@@ -29,6 +29,20 @@ class OrderRequest extends FormRequest
     public function rules()
     {
         $action = $this->segments()[2];
+
+        switch ($action){
+            case 'booking-room':
+                return [
+                    'start_date' => 'required',
+                    'end_date' => 'required|after:start_date',
+                ];
+                break;
+
+            case 'booking-tour':
+                return [
+                ];
+                break;
+        }
     }
 
     /**
