@@ -45,6 +45,12 @@ return [
             'delete' => 'Xóa thông tin phòng thành công!',
             'de-active' => 'Cập nhật tình trạng phòng thành công!',
         ],
+        'customer' => [
+            'create' => 'Tạo khách hàng thành công!',
+            'edit_password' => 'Đổi mật khẩu thành công!',
+            'delete' => 'Xóa khách hàng  mục thành công!',
+            'not_found' => 'khách hàng :message_error tồn tại!',
+        ],
         'order' => [
             'booking' => 'Booking thành công!',
             'update' => 'Cập nhật trạng thái booking thành công!',
