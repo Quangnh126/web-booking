@@ -80,4 +80,14 @@ class User extends Authenticatable
     {
         return $query->whereIn('role_id', $type);
     }
+
+    public function scopeOfStatus($query, $type)
+    {
+        return $query->where('status', $type);
+    }
+
+    public function scopeOfId($query, $type)
+    {
+        return $query->where('id', $type);
+    }
 }

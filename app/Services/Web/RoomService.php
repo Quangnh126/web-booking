@@ -28,6 +28,7 @@ class RoomService
         $perPage = $rq->perpage ?: Constant::ORDER_BY;
 
         $room = $this->room->ofActive()
+            ->with('categories')
             ->when($type, function ($query) use ($type) {
                 $query->whereIn('type_room', $type);
             })
@@ -43,7 +44,7 @@ class RoomService
             ->when($costMax, function ($query) use ($costMax) {
                 $query->where('cost', '<=', (int) $costMax);
             })
-            ->select('id', 'name', 'logo', 'cost', 'start_date', 'end_date', 'type_room')
+            ->select('id', 'name', 'logo', 'cost', 'start_date', 'end_date', 'type_room', 'type')
             ->paginate($perPage);
 
         return $room;
