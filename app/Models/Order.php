@@ -16,6 +16,7 @@ class Order extends Model
     public static $access = 'access';
     public static $ending = 'ending';
     public static $cancel = 'cancel';
+    public static $request_cancel = 'pending_cancel';
 
     protected $hidden = [
         'created_at',
@@ -41,6 +42,12 @@ class Order extends Model
     {
         return $this->belongsTo(Room::class, 'room_id', 'id')
             ->select('id', 'name', 'description', 'type', 'logo', 'cost', 'start_date', 'end_date', 'status', 'type_room');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id')
+            ->select('id', 'email', 'avatar', 'display_name', 'phone_number');
     }
 
     public function scopeOfId($query, $type)

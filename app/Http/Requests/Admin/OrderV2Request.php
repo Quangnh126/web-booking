@@ -1,15 +1,13 @@
 <?php
 
-
-namespace App\Http\Requests\Web;
-
+namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 
-class OrderRequest extends FormRequest
+class OrderV2Request extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,26 +26,18 @@ class OrderRequest extends FormRequest
      */
     public function rules()
     {
-        $action = $this->segments()[2];
+        $action = $this->segments()[3];
 
-        switch ($action){
-            case 'booking-room':
-                return [
-                    'start_date' => 'required',
-                    'end_date' => 'required|after:start_date',
-                ];
-                break;
+        switch ($action) {
 
-            case 'booking-tour':
-                return [
-                ];
-                break;
-
-            case 'list-order':
+            case 'update-status':
                 return [
                     'status' => 'in:access, ending, cancel|string',
                 ];
                 break;
+
+            default:
+                return [];
         }
     }
 
@@ -62,12 +52,7 @@ class OrderRequest extends FormRequest
 
         if ($lang == 'vi') {
             return [
-                'end_date.after' => 'Ngày kết thúc booking phải lớn hơn ngày bắt đầu !!',
                 'status.in' => 'Status của đơn đặt chỉ chấp nhận các giá trị: access, ending, cancel',
-            ];
-        } else {
-            return [
-
             ];
         }
     }
@@ -81,4 +66,5 @@ class OrderRequest extends FormRequest
                 'status_code' => 422,
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY));
     }
+
 }

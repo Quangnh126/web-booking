@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Web\AuthRequest;
 use App\Models\Role;
 use App\Models\User;
 use App\Enums\Constant;
@@ -16,8 +17,6 @@ use App\Services\FileUploadServices\FileService;
 
 class AuthController extends Controller
 {
-    use AuthTrait;
-
     private $user;
     private $authService;
     private $fileService;
@@ -188,7 +187,7 @@ class AuthController extends Controller
      *     ),
      * )
      */
-    public function register(Request $request): JsonResponse
+    public function register(AuthRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
