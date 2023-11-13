@@ -119,5 +119,9 @@ return [
             'room-booking' => 'Phòng đã có người đặt vào ngày này !!',
             'tour-booking' => 'Tour này đã đủ người đăng kí !!',
         ],
+        'request_cancel' =>[
+            'fe' => 'Yêu cầu hủy booking không được tạo do tình trạng booking đã kết thúc hoặc đang được xử lí hủy !!',
+            'be' => 'Yêu cầu hủy bỏ booking này đã được xử lí !!',
+        ],
     ]
 ];
