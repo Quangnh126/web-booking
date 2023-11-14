@@ -25,6 +25,7 @@ class RoomService
         $costMin = $rq->cost_min;
         $costMax = $rq->cost_max;
         $category = $rq->category ?: [];
+        $sort_cost = $rq->sort_cost;
         $perPage = $rq->perpage ?: Constant::ORDER_BY;
 
         $room = $this->room->ofActive()
@@ -43,6 +44,9 @@ class RoomService
             })
             ->when($costMax, function ($query) use ($costMax) {
                 $query->where('cost', '<=', (int) $costMax);
+            })
+            ->when($sort_cost, function ($query) use ($sort_cost) {
+                $query->orderBy('cost', $sort_cost);
             })
             ->select('id', 'name', 'logo', 'cost', 'start_date', 'end_date', 'type_room', 'type')
             ->paginate($perPage);

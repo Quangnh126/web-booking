@@ -113,6 +113,15 @@ class RoomController extends Controller
      *            type="integer",
      *          )
      *      ),
+     *     @OA\Parameter(
+     *          in="query",
+     *          name="sort_cost",
+     *          required=false,
+     *          description="Sắp xếp theo giá: asc: tăng dần, desc: giảm dần",
+     *          @OA\Schema(
+     *            type="string",
+     *          )
+     *      ),
      *     @OA\Response(
      *         response=200,
      *         description="Success",

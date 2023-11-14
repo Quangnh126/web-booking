@@ -144,6 +144,64 @@ class ReviewController extends Controller
 
     }
 
+    /**
+     * @OA\Get (
+     *     path="/api/review/{id}",
+     *     tags={"Review"},
+     *     summary="Danh sách review của Room, Tour",
+     *     security={{"bearerAuth":{}}},
+     *     operationId="review/show/{id}",
+     *     @OA\Parameter(
+     *          in="header",
+     *          name="language",
+     *          required=false,
+     *          description="Ngôn ngữ",
+     *          @OA\Schema(
+     *            type="string",
+     *            example="vi",
+     *          )
+     *     ),
+     *     @OA\Parameter(
+     *          in="path",
+     *          name="id",
+     *          required=false,
+     *          description="ID Room, Tour",
+     *          @OA\Schema(
+     *            type="integer",
+     *            example="",
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *             @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Success."),
+     *          )
+     *     ),
+     * )
+     */
+    public function listReviewRoom($id): JsonResponse
+    {
+        try {
+            $review = $this->reviewService->listReviewRoom($id);
+
+            return response()->json([
+                'status' => Constant::SUCCESS_CODE,
+                'message' => trans('messages.success.success'),
+                'data' => $review
+            ], Constant::SUCCESS_CODE);
+
+        } catch (\Throwable $th) {
+
+            return response()->json([
+                'status' => Constant::FALSE_CODE,
+                'message' => $th->getMessage(),
+                'data' => []
+            ], Constant::INTERNAL_SV_ERROR_CODE);
+
+        }
+    }
+
     public function getFormReview($request): array
     {
         $data = [];
