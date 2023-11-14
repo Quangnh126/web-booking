@@ -56,6 +56,10 @@ return [
             'update' => 'Cập nhật trạng thái booking thành công!',
             'cancel' => 'Hủy booking thành công!',
         ],
+        'review' => [
+            'create' => 'Tạo review thành công !!',
+            'delete' => 'Xóa review thành công !!',
+        ],
     ],
     'errors' => [
         'errors' => 'Thất bại!',
@@ -122,6 +126,10 @@ return [
         'request_cancel' =>[
             'fe' => 'Yêu cầu hủy booking không được tạo do tình trạng booking đã kết thúc hoặc đang được xử lí hủy !!',
             'be' => 'Yêu cầu hủy bỏ booking này đã được xử lí !!',
+        ],
+        'review' => [
+            'image' => 'Đã quá 5 ảnh review !!',
+            'check' => 'Bạn đã review rồi !!',
         ],
     ]
 ];

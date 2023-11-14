@@ -13,6 +13,7 @@ class File extends Model
     static $tour = 'tour';
     static $about_us = 'about_us';
     static $file = 'file';
+    static $review = 'review';
 
     protected $table = 'files';
 

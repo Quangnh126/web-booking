@@ -29,5 +29,6 @@ class Constant
     const PATH_CATEGORY             = 'category';
     const PATH_ROOM                 = 'room';
     const PATH_TOUR                 = 'tour';
+    const PATH_REVIEW               = 'review';
     const PATH_APP                  = 'app';
 }
