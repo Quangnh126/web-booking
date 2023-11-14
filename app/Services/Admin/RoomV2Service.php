@@ -32,9 +32,24 @@ class RoomV2Service
         $search = $request->search;
         $status = $request->status;
         $type = $request->type;
+        $type_room = $request->type_room;
         $perPage = $request->perpage ?? Constant::ORDER_BY;
 
-        $room = $this->room->paginate($perPage);
+        $room = $this->room->with('categories', 'banner')
+            ->when($search, function ($query) use ($search) {
+                $query->where('name', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
+            })
+            ->when($status, function ($query) use ($status) {
+                $query->whereIn('status', $status);
+            })
+            ->when($type, function ($query) use ($type) {
+                $query->whereIn('type', $type);
+            })
+            ->when($type_room, function ($query) use ($type_room) {
+                $query->whereIn('type_room', $type_room);
+            })
+            ->paginate($perPage);
 
         return $room;
     }
