@@ -75,7 +75,7 @@ class RoomV2Controller
      *     ),
      *     @OA\Parameter(
      *          in="query",
-     *          name="keyword",
+     *          name="search",
      *          required=false,
      *          description="Tìm kiếm theo tên sự kiện, mô tả",
      *          @OA\Schema(
@@ -101,6 +101,16 @@ class RoomV2Controller
      *          @OA\Schema(
      *            type="array",
      *            @OA\Items(type="integer"),
+     *          )
+     *     ),
+     *     @OA\Parameter(
+     *          in="query",
+     *          name="type_room[]",
+     *          required=false,
+     *          description="Filter room hoặc tour",
+     *          @OA\Schema(
+     *            type="array",
+     *            @OA\Items(type="string"),
      *          )
      *     ),
      *     @OA\Response(
