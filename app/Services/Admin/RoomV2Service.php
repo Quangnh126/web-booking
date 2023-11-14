@@ -33,6 +33,7 @@ class RoomV2Service
         $status = $request->status;
         $type = $request->type;
         $type_room = $request->type_room;
+        $sort_cost = $request->sort_cost;
         $perPage = $request->perpage ?? Constant::ORDER_BY;
 
         $room = $this->room->with('categories', 'banner')
@@ -48,6 +49,9 @@ class RoomV2Service
             })
             ->when($type_room, function ($query) use ($type_room) {
                 $query->whereIn('type_room', $type_room);
+            })
+            ->when($sort_cost, function ($query) use ($sort_cost) {
+                $query->orderBy('cost', $sort_cost);
             })
             ->paginate($perPage);
 
