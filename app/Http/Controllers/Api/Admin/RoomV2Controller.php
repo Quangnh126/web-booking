@@ -613,7 +613,7 @@ class RoomV2Controller
         $data['type'] = $request->type;
         $data['cost'] = $request->cost;
         $data['start_date'] = $request->start_date ?: null;
-        $data['end_date'] = $request->start_date ?: null;
+        $data['end_date'] = $request->end_date ?: null;
         $data['status'] = 1;
         $data['type_room'] = $request->type_room;
 
