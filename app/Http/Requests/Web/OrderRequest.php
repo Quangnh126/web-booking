@@ -45,7 +45,7 @@ class OrderRequest extends FormRequest
 
             case 'list-order':
                 return [
-                    'status' => 'in:access, ending, cancel|string',
+                    'status' => 'in:access,ending,cancel|string',
                 ];
                 break;
         }

@@ -32,7 +32,7 @@ class OrderV2Request extends FormRequest
 
             case 'update-status':
                 return [
-                    'status' => 'in:access, ending, cancel|string',
+                    'status' => 'in:access,ending,cancel|string',
                 ];
                 break;
 
