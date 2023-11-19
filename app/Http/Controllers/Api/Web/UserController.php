@@ -153,7 +153,7 @@ class UserController extends Controller
             DB::beginTransaction();
             $id = $request->id;
             $checkUser = $this->user->where('id', $id)->first();
-            if (!isset($checkUser) || $checkUser->role_id ==1 ) {
+            if (!isset($checkUser) || $checkUser->role_id !=2 ) {
                 DB::rollBack();
                 return response()->json([
                     'status' => Constant::BAD_REQUEST_CODE,
