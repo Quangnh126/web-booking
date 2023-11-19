@@ -201,8 +201,8 @@ class RoomController extends Controller
         try {
             $room = $this->room->ofActive()
                 ->where('id', $id)
-                ->with('banner')
-                ->select('id', 'name', 'description', 'logo', 'cost', 'start_date', 'end_date', 'type_room')
+                ->with('banner', 'categories')
+                ->select('id', 'name', 'description', 'type', 'logo', 'cost', 'start_date', 'end_date', 'type_room')
                 ->first();
 
             return response()->json([
