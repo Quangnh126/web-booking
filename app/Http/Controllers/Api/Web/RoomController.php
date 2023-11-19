@@ -205,6 +205,13 @@ class RoomController extends Controller
                 ->select('id', 'name', 'description', 'type', 'logo', 'cost', 'start_date', 'end_date', 'type_room')
                 ->first();
 
+            if ($room->type_room == 'tour') {
+                $orderRoom = $this->orderService->getAllOrder($id);
+                $room->can_order = (int) $room->categories->number - count($orderRoom);
+            } else {
+                $room->can_order = 0;
+            }
+
             return response()->json([
                 'status' => Constant::SUCCESS_CODE,
                 'message' => trans('messages.success.success'),
