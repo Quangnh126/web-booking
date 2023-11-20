@@ -45,7 +45,7 @@ class OrderRequest extends FormRequest
 
             case 'list-order':
                 return [
-                    'status' => 'in:access,ending,cancel|string',
+                    'status.*' => 'in:pending,access,ending,cancel|string',
                 ];
                 break;
         }
@@ -63,7 +63,7 @@ class OrderRequest extends FormRequest
         if ($lang == 'vi') {
             return [
                 'end_date.after' => 'Ngày kết thúc booking phải lớn hơn ngày bắt đầu !!',
-                'status.in' => 'Status của đơn đặt chỉ chấp nhận các giá trị: access, ending, cancel',
+                'status.in' => 'Status của đơn đặt chỉ chấp nhận các giá trị: pending, access, ending, cancel',
             ];
         } else {
             return [
