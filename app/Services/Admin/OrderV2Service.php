@@ -36,6 +36,7 @@ class OrderV2Service
             ->when($search, function ($query) use ($search) {
                 $query->where('r.name', 'like', '%' .$search .'%');
             })
+            ->orderBy('order.created_at', 'desc')
             ->select('order.*', 'r.name', 'r.type', 'r.description', 'r.logo', 'r.type_room')
             ->paginate($perPage);
 
