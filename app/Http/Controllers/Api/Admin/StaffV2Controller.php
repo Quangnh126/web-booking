@@ -476,7 +476,7 @@ class StaffV2Controller extends Controller
             $data['password'] = bcrypt($request->password);
         }
 
-        if ($request->avatar) {
+        if (!$request->image_data || $request->image_data == 'true') {
             $data['avatar'] = $request->avatar;
         }
 

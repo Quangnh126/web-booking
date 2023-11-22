@@ -500,7 +500,8 @@ class RoomV2Controller
     {
         try {
             DB::beginTransaction();
-            if ($request->logo_delete){
+
+            if ($request->logo_delete == 'true'){
                 $this->roomV2Service->deleteLogo($request->logo_delete, $id);
                 $request->logo = $this->getImage($request->logo, $request->type_room);
             }
@@ -604,7 +605,7 @@ class RoomV2Controller
     {
         $data = [];
 
-        if ($request->logo) {
+        if (!$request->logo_delete || $request->logo_delete == 'true') {
             $data['logo'] = $request->logo;
         }
 
