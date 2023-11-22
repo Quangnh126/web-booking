@@ -48,6 +48,7 @@ class RoomService
             ->when($sort_cost, function ($query) use ($sort_cost) {
                 $query->orderBy('cost', $sort_cost);
             })
+            ->orderBy('created_at', 'desc')
             ->select('id', 'name', 'description', 'logo', 'cost', 'start_date', 'end_date', 'type_room', 'type')
             ->paginate($perPage);
 

@@ -39,6 +39,7 @@ class ReviewV2Service
             ->when($user_id, function ($query) use ($user_id) {
                 $query->whereIn('user_id', $user_id);
             })
+            ->orderBy('created_at', 'desc')
             ->paginate($perPage);
 
         return $reviews;

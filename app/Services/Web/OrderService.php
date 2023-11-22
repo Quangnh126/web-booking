@@ -36,6 +36,7 @@ class OrderService
     {
         $orders = $this->order->ofRoomId($room_id)
             ->whereIn('status', [Order::$pending, Order::$access])
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return $orders;

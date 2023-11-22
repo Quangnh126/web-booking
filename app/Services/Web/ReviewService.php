@@ -28,6 +28,7 @@ class ReviewService
     {
         $review = $this->review->with('user', 'room', 'image')
             ->where('room_id', $id)
+            ->orderBy('updated_at', 'desc')
             ->paginate(5);
 
         return $review;

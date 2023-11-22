@@ -349,7 +349,7 @@ class StaffV2Controller extends Controller
                 ], Constant::BAD_REQUEST_CODE);
             }
 
-            if ($request->image_data == 'true') {
+            if ($request->image_delete == 'true') {
                 $this->fileService->deleteImage($checkStaff->avatar);
                 $pathName = $this->fileService->getFilePath($request->image_data, Constant::PATH_PROFILE);
 
@@ -476,7 +476,7 @@ class StaffV2Controller extends Controller
             $data['password'] = bcrypt($request->password);
         }
 
-        if (!$request->image_data || $request->image_data == 'true') {
+        if (!$request->image_delete || $request->image_delete == 'true') {
             $data['avatar'] = $request->avatar;
         }
 

@@ -50,6 +50,7 @@ class RequestCancelV2Service
             ->when($type, function ($query) use ($type) {
                 $query->whereIn('r.type_room', $type);
             })
+            ->orderBy('request_cancel_booking.created_at', 'desc')
             ->select('request_cancel_booking.*', 'u.email', 'u.avatar', 'u.display_name', 'u.phone_number', 'o.room_id',
                 'o.cost', 'o.start_date', 'o.end_date', 'o.status as status_order', 'r.name', 'r.logo',
                 'r.status as status_room', 'r.type_room')

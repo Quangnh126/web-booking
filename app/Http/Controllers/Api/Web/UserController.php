@@ -162,7 +162,7 @@ class UserController extends Controller
                 ], Constant::BAD_REQUEST_CODE);
             }
 
-            if ($request->image_data == 'true') {
+            if ($request->image_delete == 'true') {
                 $this->fileService->deleteImage($checkUser->avatar);
                 $pathName = $this->fileService->getFilePath($request->image_data, Constant::PATH_PROFILE);
 
@@ -200,7 +200,9 @@ class UserController extends Controller
 
     public function getUserRequest($request): array
     {
-        if (!$request->image_data || $request->image_data == 'true') {
+        $data = [];
+
+        if (!$request->image_delete || $request->image_delete == 'true') {
             $data['avatar'] = $request->avatar;
         }
 
