@@ -162,7 +162,7 @@ class UserController extends Controller
                 ], Constant::BAD_REQUEST_CODE);
             }
 
-            if ($request->image_data) {
+            if ($request->image_data == 'true') {
                 $this->fileService->deleteImage($checkUser->avatar);
                 $pathName = $this->fileService->getFilePath($request->image_data, Constant::PATH_PROFILE);
 
@@ -200,7 +200,7 @@ class UserController extends Controller
 
     public function getUserRequest($request): array
     {
-        if ($request->avatar) {
+        if (!$request->image_data || $request->image_data == 'true') {
             $data['avatar'] = $request->avatar;
         }
 
@@ -270,7 +270,7 @@ class UserController extends Controller
     public function updatePs(Request $request): JsonResponse
     {
         try {
-            
+
             DB::beginTransaction();
             $id = $request->id;
             $checkUser = $this->user->where('id', $id)->first();
