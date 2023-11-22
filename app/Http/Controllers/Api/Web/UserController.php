@@ -78,7 +78,7 @@ class UserController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            $user = $this->user->select('id', 'email', 'display_name', 'phone_number', 'role_id', 'avatar')->where('id', $id)->first();
+            $user = $this->user->select('id', 'email', 'display_name', 'phone_number', 'role_id', 'avatar', 'detail_address')->where('id', $id)->first();
 
             return response()->json([
                 'status' => Constant::SUCCESS_CODE,
