@@ -31,7 +31,7 @@ class UserV2Controller
     }
 
     /**
-     * @author Nampx
+     * @author Quangnh
      * @OA\Post (
      *     path="/api/v2/auth/login",
      *     tags={"CMS Tài khoản"},
@@ -105,7 +105,7 @@ class UserV2Controller
 
                 $data = [];
                 $data['id'] = $staff->id;
-                $data['display_name'] = $staff->fullname;
+                $data['display_name'] = $staff->display_name;
                 $data['avatar'] = $staff->avatar;
                 $data['role'] = ($staff->role_id == 1) ? Role::$admin : Role::$staff;
                 $data['token'] = $staff->createToken("API TOKEN")->plainTextToken;
