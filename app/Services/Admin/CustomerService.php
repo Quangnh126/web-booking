@@ -9,7 +9,7 @@ use App\Enums\Constant;
 use App\Services\FileUploadServices\FileService;
 use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
 
-class CustomerService extends Service 
+class CustomerService extends Service
 {
     private $user;
     private $fileService;
@@ -25,11 +25,15 @@ class CustomerService extends Service
     public function listCustomer($request)
     {
         $search = $request->search;
-        $role_id = $request->role_id;
         $perPage = $request->perpage ?? Constant::ORDER_BY;
-        $role_staff = [User::$admin, User::$staff , User::$user];
 
-        $query = $this->user->select('users.*')->where('role_id',2)->paginate($perPage);;
+        $query = $this->user->select('users.*')
+            ->when($search, function ($query) use ($search) {
+                $query->where('email', 'like', '%' . $search . '%')
+                    ->orWhere('display_name', 'like', '%' . $search . '%');
+            })
+            ->where('role_id',User::$user)
+            ->paginate($perPage);;
 
         return $query;
     }
@@ -69,7 +73,7 @@ class CustomerService extends Service
     public function updateCustomer( $req, int $id)
     {
         $customer = $this->user->findOrFail($id);
-        $customer->status = $req;       
+        $customer->status = $req;
         $customer->update();
         return $customer;
     }
