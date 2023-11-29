@@ -278,11 +278,11 @@ class OrderController extends Controller
     /**
      * @author Quangnh
      * @OA\Get (
-     *     path="/api/v2/order/index",
-     *     tags={"CMS Order"},
-     *     summary="CMS danh sách đơn booking",
+     *     path="/api/order/list-order",
+     *     tags={"Order"},
+     *     summary="Danh sách đơn booking",
      *     security={{"bearerAuth":{}}},
-     *     operationId="v2/order/index",
+     *     operationId="/order/list-order",
      *     @OA\Parameter(
      *          in="header",
      *          name="language",
