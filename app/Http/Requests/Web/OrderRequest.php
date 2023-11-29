@@ -45,7 +45,7 @@ class OrderRequest extends FormRequest
 
             case 'list-order':
                 return [
-                    'status.*' => 'in:pending,access,ending,cancel|string',
+                    'status.*' => 'in:pending,access,ending,cancel,pending_cancel|string',
                 ];
                 break;
         }

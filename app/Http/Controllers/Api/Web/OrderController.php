@@ -336,7 +336,7 @@ class OrderController extends Controller
      *          in="query",
      *          name="status[]",
      *          required=false,
-     *          description="pending, access, endding, cancel",
+     *          description="pending, access, endding, cancel, pending_cancel",
      *          @OA\Schema(
      *            type="array",
      *            @OA\Items(type="string"),
