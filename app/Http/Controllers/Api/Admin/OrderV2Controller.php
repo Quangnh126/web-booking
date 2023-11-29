@@ -29,11 +29,11 @@ class OrderV2Controller extends Controller
     /**
      * @author Quangnh
      * @OA\Get (
-     *     path="/api/order/list-order",
-     *     tags={"Order"},
-     *     summary="Danh sách đơn booking",
+     *     path="/api/v2/order/index",
+     *     tags={"CMS Order"},
+     *     summary="CMS danh sách đơn booking",
      *     security={{"bearerAuth":{}}},
-     *     operationId="order/index",
+     *     operationId="v2/order/index",
      *     @OA\Parameter(
      *          in="header",
      *          name="language",
@@ -87,7 +87,7 @@ class OrderV2Controller extends Controller
      *          in="query",
      *          name="status[]",
      *          required=false,
-     *          description="pending, access, endding, cancel",
+     *          description="pending, access, endding, cancel, pending_cancel",
      *          @OA\Schema(
      *            type="array",
      *            @OA\Items(type="string"),

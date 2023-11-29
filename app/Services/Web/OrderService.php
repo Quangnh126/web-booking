@@ -80,6 +80,7 @@ class OrderService
             })
             ->where('order.user_id', $id)
             ->select('order.*', 'r.name', 'r.type', 'r.description', 'r.logo', 'r.type_room')
+            ->orderBy('order.updated_at', 'desc')
             ->paginate($perPage);
 
         return $orders;
