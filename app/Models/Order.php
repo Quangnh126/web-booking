@@ -65,4 +65,9 @@ class Order extends Model
         return $this->whereIn('status', ['pending', 'access']);
     }
 
+    public function scopeOfStatus($query, $type)
+    {
+        return $query->where('status', 'like', '%' . $type . '%');
+    }
+
 }
