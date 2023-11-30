@@ -6,6 +6,8 @@ use App\Http\Requests\Web\AuthRequest;
 use App\Models\Role;
 use App\Models\User;
 use App\Enums\Constant;
+use App\Notifications\VerifyCodeEmail;
+use App\Services\Web\UserService;
 use Illuminate\Http\Request;
 use App\Http\Traits\AuthTrait;
 use Illuminate\Http\JsonResponse;
@@ -20,15 +22,18 @@ class AuthController extends Controller
     private $user;
     private $authService;
     private $fileService;
+    private $userService;
 
     public function __construct(
         User $user,
         AuthService $authService,
-        FileService $fileService
+        FileService $fileService,
+        UserService $userService
     ) {
         $this->user = $user;
         $this->authService = $authService;
         $this->fileService = $fileService;
+        $this->userService = $userService;
     }
 
     /**
@@ -101,6 +106,15 @@ class AuthController extends Controller
                     'status' => Constant::BAD_REQUEST_CODE,
                     'errorCode' => 'E_UC2_3',
                     'message' => trans('messages.errors.users.password_not_correct'),
+                    'data' => []
+                ], Constant::BAD_REQUEST_CODE);
+            }
+
+            if ($user && $user->verify == User::$not_verify){
+                return response()->json([
+                    'status' => Constant::BAD_REQUEST_CODE,
+                    'errorCode' => 'E_UC2_1',
+                    'message' => trans('messages.errors.users.account_not_verify'),
                     'data' => []
                 ], Constant::BAD_REQUEST_CODE);
             }
@@ -195,7 +209,17 @@ class AuthController extends Controller
 
             $customer = $this->authService->register($data);
 
+            $emailInput = $request->email;
+            $randomCode = sprintf("%04d", mt_rand(1, 9999));
+
+            // save code to DB
+            $this->userService->saveCode($emailInput, $randomCode);
+
+            // send notify code
+            $customer->notify(new VerifyCodeEmail($randomCode, $emailInput));
+
             DB::commit();
+
             return response()->json([
                 'status' => Constant::SUCCESS_CODE,
                 'message' => trans('messages.success.customer.create'),
@@ -209,6 +233,84 @@ class AuthController extends Controller
                 'message' => $th->getMessage(),
                 'data' => []
             ], Constant::INTERNAL_SV_ERROR_CODE);
+        }
+    }
+
+    /**
+     * @author Quangnh
+     * @OA\Post (
+     *     path="/api/register/verify-code",
+     *     tags={"Tài khoản"},
+     *     summary="Xác thực đăng ký tài khoản",
+     *     operationId="users/verify",
+     *     @OA\Parameter(
+     *          in="header",
+     *          name="language",
+     *          required=false,
+     *          description="Ngôn ngữ",
+     *          @OA\Schema(
+     *            type="string",
+     *            example="vi",
+     *          )
+     *     ),
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(property="email", type="string"),
+     *              @OA\Property(property="code", type="string"),
+     *          @OA\Examples(
+     *              summary="Examples",
+     *              example = "Examples",
+     *              value = {
+     *                  "email": "user@gmail.com",
+     *                  "code": "123123",
+     *                  },
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *             @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Success."),
+     *          )
+     *     ),
+     * )
+     */
+    public function codeVerify(Request $request): JsonResponse
+    {
+        try {
+
+            DB::beginTransaction();
+
+            // get code & email
+            $getCode = $this->userService->getCode($request);
+
+            if (isset($getCode)) {
+
+                $user = $this->user->ofEmail($request->email);
+
+                $this->userService->activeAccount($user);
+
+                $this->userService->deleteCode($request);
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => Constant::SUCCESS_CODE,
+                    'message' => trans('messages.success.users.create'),
+                ], Constant::SUCCESS_CODE);
+
+            }
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => Constant::INTERNAL_SV_ERROR_CODE,
+                'message' => $th->getMessage()
+            ], Constant::INTERNAL_SV_ERROR_CODE);
+
         }
     }
 
@@ -227,6 +329,7 @@ class AuthController extends Controller
         $data['phone_number'] = $request->phone_number;
         $data['role_id'] = 2;
         $data['status'] = 1;
+        $data['verify'] = 0;
 
         return $data;
     }

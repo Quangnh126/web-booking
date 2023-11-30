@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\Admin\UserV2Controller;
 Route::group(['middleware' => 'language'], function () {
     Route::post('/auth/login', [AuthController::class, 'loginUser']);
     Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register/verify-code', [AuthController::class, 'codeVerify']);
 });
 
 Route::group(['middleware' => ['role:user', 'language']], function () {
