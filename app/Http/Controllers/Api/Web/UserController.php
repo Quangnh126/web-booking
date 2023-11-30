@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\Web;
 
 use App\Models\User;
 use App\Enums\Constant;
+use App\Notifications\VerifyCodeEmail;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use App\Http\Traits\AuthTrait;
 use App\Services\Web\UserService;
@@ -316,4 +318,364 @@ class UserController extends Controller
             ], Constant::INTERNAL_SV_ERROR_CODE);
         }
     }
+
+    /**
+     * @author Quangnh
+     * @OA\Post (
+     *     path="/api/user/send-code",
+     *     tags={"Tài khoản"},
+     *     summary="Gửi mã code quên mật khẩu",
+     *     security={{"bearerAuth":{}}},
+     *     operationId="user/send-code",
+     *     @OA\Parameter(
+     *          in="header",
+     *          name="language",
+     *          required=false,
+     *          description="Ngôn ngữ",
+     *          @OA\Schema(
+     *            type="string",
+     *            example="vi",
+     *          )
+     *     ),
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(property="email", type="string"),
+     *          @OA\Examples(
+     *              summary="Examples",
+     *              example = "Examples",
+     *              value = {
+     *                  "email": "user@gmail.com",
+     *                  },
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *             @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Success."),
+     *          )
+     *     ),
+     * )
+     */
+    public function sendCodeForgotPassword(Request $request): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $user = $this->checkUser($request);
+
+            if (!$user) {
+                return response()->json([
+                    'status' => Constant::BAD_REQUEST_CODE,
+                    'message' => 'This email does not exist!',
+                    'data' => []
+                ], Constant::BAD_REQUEST_CODE);
+            }
+            $randomCode = sprintf("%04d", mt_rand(1, 9999));
+
+            // save code to DB
+            $this->userService->saveCode($request->email, $randomCode);
+
+            // send notify code
+            $user->notify(new VerifyCodeEmail($randomCode, $request->email));
+
+            DB::commit();
+
+            return response()->json([
+                'status' => Constant::SUCCESS_CODE,
+                'message' => trans('messages.success.users.forgot_password'),
+                'data' => []
+            ], Constant::SUCCESS_CODE);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => Constant::FALSE_CODE,
+                'message' => $th->getMessage(),
+                'data' => []
+            ], Constant::INTERNAL_SV_ERROR_CODE);
+
+        }
+    }
+
+    /**
+     * @author Nampx
+     * @OA\Post (
+     *     path="/api/user/resend-code",
+     *     tags={"Tài khoản"},
+     *     summary="Gửi lại mã code",
+     *     security={{"bearerAuth":{}}},
+     *     operationId="user/resend-code",
+     *     @OA\Parameter(
+     *          in="header",
+     *          name="language",
+     *          required=false,
+     *          description="Ngôn ngữ",
+     *          @OA\Schema(
+     *            type="string",
+     *            example="vi",
+     *          )
+     *     ),
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(property="email", type="string"),
+     *          @OA\Examples(
+     *              summary="Examples",
+     *              example = "Examples",
+     *              value = {
+     *                  "email": "user@gmail.com",
+     *                  },
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *             @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Success."),
+     *          )
+     *     ),
+     * )
+     */
+    public function reSendCode(Request $request): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $user = $this->checkUser($request);
+
+            if (!$user) {
+                return response()->json([
+                    'status' => Constant::BAD_REQUEST_CODE,
+                    'message' => 'This email does not exist!',
+                    'data' => []
+                ], Constant::BAD_REQUEST_CODE);
+            }
+            $randomCode = sprintf("%04d", mt_rand(1, 9999));
+
+            // save code to DB
+            $this->userService->saveCode($request->email, $randomCode);
+
+            // send notify code
+            $user->notify(new VerifyCodeEmail($randomCode, $request->email));
+
+            DB::commit();
+
+            return response()->json([
+                'status' => Constant::SUCCESS_CODE,
+                'message' => trans('messages.success.users.resend_code'),
+                'data' => []
+            ], Constant::SUCCESS_CODE);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => Constant::FALSE_CODE,
+                'message' => $th->getMessage(),
+                'data' => []
+            ], Constant::INTERNAL_SV_ERROR_CODE);
+
+        }
+    }
+
+    /**
+     * @author Quangnh
+     * @OA\Post (
+     *     path="/api/user/verify-code",
+     *     tags={"Tài khoản"},
+     *     summary="Quên mật khẩu",
+     *     security={{"bearerAuth":{}}},
+     *     operationId="user/verify-code",
+     *     @OA\Parameter(
+     *          in="header",
+     *          name="language",
+     *          required=false,
+     *          description="Ngôn ngữ",
+     *          @OA\Schema(
+     *            type="string",
+     *            example="vi",
+     *          )
+     *     ),
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(property="email", type="string"),
+     *              @OA\Property(property="code", type="string"),
+     *          @OA\Examples(
+     *              summary="Examples",
+     *              example = "Examples",
+     *              value = {
+     *                  "email": "user@gmail.com",
+     *                  "code": "1234",
+     *                  },
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *             @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Success."),
+     *          )
+     *     ),
+     * )
+     */
+    public function codeVerify(Request $request): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            // get code & email
+            $getCode = $this->userService->getCode($request);
+
+            if (!empty($getCode)) {
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => Constant::SUCCESS_CODE,
+                    'message' => trans('messages.success.users.confirm_success'),
+                    'data' => []
+                ], Constant::SUCCESS_CODE);
+
+            }
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => Constant::BAD_REQUEST_CODE,
+                'message' => 'Verify code failed!',
+                'data' => []
+            ], Constant::BAD_REQUEST_CODE);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => Constant::FALSE_CODE,
+                'message' => $th->getMessage(),
+                'data' => []
+            ], Constant::INTERNAL_SV_ERROR_CODE);
+
+        }
+    }
+
+    /**
+     * @author Quangnh
+     * @OA\Post (
+     *     path="/api/user/reset-password",
+     *     tags={"Tài khoản"},
+     *     summary="Reset mật khẩu",
+     *     security={{"bearerAuth":{}}},
+     *     operationId="user/reset-password",
+     *     @OA\Parameter(
+     *          in="header",
+     *          name="language",
+     *          required=false,
+     *          description="Ngôn ngữ",
+     *          @OA\Schema(
+     *            type="string",
+     *            example="vi",
+     *          )
+     *     ),
+     *     @OA\RequestBody(
+     *          @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(property="email", type="string"),
+     *              @OA\Property(property="code", type="string"),
+     *              @OA\Property(property="new_password", type="string"),
+     *          @OA\Examples(
+     *              summary="Examples",
+     *              example = "Examples",
+     *              value = {
+     *                  "email": "user@gmail.com",
+     *                  "code": "1234",
+     *                  "new_password": "123456",
+     *                  },
+     *              ),
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Success",
+     *             @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Success."),
+     *          )
+     *     ),
+     * )
+     */
+    public function resetPassword(Request $request): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $user = $this->checkUser($request);
+
+            if (!$user) {
+                return response()->json([
+                    'status' => Constant::BAD_REQUEST_CODE,
+                    'message' => 'This email does not exist!',
+                    'data' => []
+                ], Constant::BAD_REQUEST_CODE);
+            }
+
+            // get code & email
+            $getCode = $this->userService->getCodeToReset($request);
+
+            if (!empty($getCode)) {
+                $this->userService->newPassword($request->email, $request->new_password);
+
+                $this->userService->deleteCode($request);
+
+                DB::commit();
+
+                return response()->json([
+                    'status' => Constant::SUCCESS_CODE,
+                    'message' => 'Update password successfully!',
+                    'data' => []
+                ], Constant::SUCCESS_CODE);
+            }
+            DB::rollBack();
+
+            return response()->json([
+                'status' => Constant::BAD_REQUEST_CODE,
+                'message' => 'Verify code failed!',
+                'data' => []
+            ], Constant::BAD_REQUEST_CODE);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'status' => Constant::FALSE_CODE,
+                'message' => $th->getMessage(),
+                'data' => []
+            ], Constant::INTERNAL_SV_ERROR_CODE);
+
+        }
+    }
+
+    /**
+     * @return Guard
+     * @author Quangnh
+     */
+    public function guard(): Guard
+    {
+        return Auth::guard();
+    }
+
+    public function checkUser($request)
+    {
+        return User::where('email', $request->email)->first();
+    }
+
 }

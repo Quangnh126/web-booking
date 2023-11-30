@@ -89,6 +89,7 @@ return [
             'password_old_not_correct' => 'Mật khẩu cũ không chính xác!',
             'not_permission' => 'Bạn không có quyền xem nội dung này!',
             'confirm_fail' => 'Xác thực mã code thất bại!',
+            'account_not_verify' => 'tài khoản chưa xác thực',
         ],
         'image' => [
             'not_available' => 'Ảnh không hợp lệ!',
