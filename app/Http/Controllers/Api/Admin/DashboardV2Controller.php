@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Enums\Constant;
 use App\Http\Controllers\Controller;
 use App\Services\Admin\DashboardV2Service;
+use Illuminate\Http\JsonResponse;
 
 class DashboardV2Controller extends Controller
 {
@@ -44,7 +45,7 @@ class DashboardV2Controller extends Controller
      *     ),
      * )
      */
-    public function general()
+    public function general(): JsonResponse
     {
         try {
             $dashboard = $this->dashboardV2Service->general();
